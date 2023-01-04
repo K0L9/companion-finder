@@ -1,0 +1,3 @@
+[submodule "CompanionFinder.WebUI/Client"] 
+  path = CompanionFinder.WebUI/Client
+  url = https://github.com/K0L9/companion-finder.git
