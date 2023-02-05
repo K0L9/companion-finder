@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CompanionFinder.Application.DTO;
 using CompanionFinder.Domain.Entities;
+using CompanionFinder.Domain.Entities.Core;
 
 namespace CompanionFinder.Infrastructure.Services.Mapper
 {
@@ -8,9 +9,8 @@ namespace CompanionFinder.Infrastructure.Services.Mapper
     {
         public ChatRoomMapperProfile()
         {
-            CreateMap<FindRoomRequest, AddRoomRequestDTO>()
-                .ForMember(dest => dest.UserIp, opt => opt.MapFrom(src => src.User.UserIp))
-                .ForMember(dest => dest.ThemeTitle, opt => opt.MapFrom(src => src.Theme.Title));
+            CreateMap<AddRoomDTO, ChatRoom>()
+                .ForMember(dest => dest.ConversationThemeId, opt => opt.MapFrom(src => src.ConversationThemeId));
 
         }
     }

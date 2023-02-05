@@ -3,6 +3,7 @@ using System;
 using CompanionFinder.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CompanionFinder.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230202215320_CurrentChatNullable")]
+    partial class CurrentChatNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,6 +33,7 @@ namespace CompanionFinder.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("CurrentChatId")
+                        .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
@@ -125,7 +128,9 @@ namespace CompanionFinder.Infrastructure.Migrations
                 {
                     b.HasOne("CompanionFinder.Domain.Entities.Core.ChatRoom", "CurrentChat")
                         .WithMany("Users")
-                        .HasForeignKey("CurrentChatId");
+                        .HasForeignKey("CurrentChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CurrentChat");
                 });

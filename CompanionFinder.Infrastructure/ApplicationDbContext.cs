@@ -10,8 +10,9 @@ namespace CompanionFinder.Infrastructure
         }
 
         public virtual DbSet<AnonymousUser> Users { get; set; }
-        public virtual DbSet<Chat> Chats { get; set; }
+        public virtual DbSet<ChatRoom> ChatRooms { get; set; }
         public virtual DbSet<ConversationTheme> Themes { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -19,11 +20,22 @@ namespace CompanionFinder.Infrastructure
 
             builder.Entity<AnonymousUser>()
                    .HasOne(x => x.CurrentChat)
-                   .WithMany(x => x.Users);
+                   .WithMany(x => x.Users)
+                   .HasForeignKey(x => x.CurrentChatId)
+                   .IsRequired(false);
 
-            builder.Entity<Chat>()
+            builder.Entity<ChatRoom>()
                  .HasOne(x => x.Theme)
                  .WithMany(x => x.Chats);
+
+            builder.Entity<Message>()
+                .HasOne(x => x.CreatedByUser)
+                .WithMany(x => x.Messages)
+                .HasForeignKey(x => x.CreatedByUserId);
+
+            builder.Entity<Message>()
+                .HasOne(x => x.ChatRoom)
+                .WithMany(x => x.Messages);
 
             //builder.ApplyConfiguration(new RoleConfiguration());
         }

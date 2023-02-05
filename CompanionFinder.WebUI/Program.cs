@@ -1,5 +1,10 @@
+using CompanionFinder.Application.Commands;
+using CompanionFinder.Application.Queries;
 using CompanionFinder.Application.Services;
 using CompanionFinder.Infrastructure;
+using CompanionFinder.Infrastructure.Commands;
+using CompanionFinder.Infrastructure.Hubs;
+using CompanionFinder.Infrastructure.Queries;
 using CompanionFinder.Infrastructure.Services;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +19,17 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CORSPolicy",
+        builder => builder
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()
+        .SetIsOriginAllowed((hosts) => true));
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(
@@ -22,6 +38,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddTransient<IChatRoomService, ChatRoomService>();
+builder.Services.AddTransient<IChatRoomCommand, ChatRoomCommand>();
+builder.Services.AddSingleton<IQueueService, QueueService>();
+
+builder.Services.AddTransient<IUserQuery, UserQuery>();
+builder.Services.AddTransient<IRoomQuery, RoomQuery>();
 
 var app = builder.Build();
 
@@ -34,9 +55,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+app.UseCors("CORSPolicy");
 app.UseAuthorization();
+
+app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<RoomHub>("/rooms");
+});
+
+app.UseHttpsRedirection();
 
 app.MapControllers();
 

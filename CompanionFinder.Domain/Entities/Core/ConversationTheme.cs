@@ -8,6 +8,6 @@ namespace CompanionFinder.Domain.Entities.Core
         public string Title { get; set; }
 
         //Nav props
-        public virtual ICollection<Chat> Chats { get; set; }
+        public virtual ICollection<ChatRoom> Chats { get; set; }
     }
 }

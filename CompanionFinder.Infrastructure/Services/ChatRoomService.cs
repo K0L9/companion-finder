@@ -1,37 +1,49 @@
 ﻿using AutoMapper;
+using CompanionFinder.Application.Commands;
 using CompanionFinder.Application.DTO;
+using CompanionFinder.Application.Queries;
 using CompanionFinder.Application.Services;
 using CompanionFinder.Domain.Entities;
+using CompanionFinder.Domain.Entities.Core;
 
 namespace CompanionFinder.Infrastructure.Services
 {
     public class ChatRoomService : IChatRoomService
     {
-        public Queue<FindRoomRequest> MainFindRoomQueue { get; set; }
+        private List<FindRoomRequest> _mainFindRoomQueue;
+        private readonly IChatRoomCommand chatRoomCommand;
+        private readonly IQueueService queueService;
         private readonly IMapper mapper;
+        private readonly IRoomQuery roomQuery;
+        private readonly IUserQuery userQuery;
 
-        public ChatRoomService(IMapper mapper)
+        public ChatRoomService(IChatRoomCommand chatRoomCommand, IQueueService queueService, IMapper mapper, IRoomQuery roomQuery, IUserQuery userQuery)
         {
-            MainFindRoomQueue = new Queue<FindRoomRequest>();
+            _mainFindRoomQueue = new List<FindRoomRequest>();
+            this.chatRoomCommand = chatRoomCommand;
+            this.queueService = queueService;
             this.mapper = mapper;
+            this.roomQuery = roomQuery;
+            this.userQuery = userQuery;
         }
 
-        public async Task AddFindRoomRequestToQueue(AddRoomRequestDTO taskRoomRequest)
+        public async Task<int> CreateChatRoom(AddRoomDTO addRoomDTO)
         {
-            MainFindRoomQueue.Enqueue(mapper.Map<FindRoomRequest>(taskRoomRequest));
+            var result = await chatRoomCommand.AddAsync(mapper.Map<ChatRoom>(addRoomDTO));
+
+            await chatRoomCommand.SaveChangesAsync();
+
+            return result.Id;
         }
 
-        public Task<FindRoomRequest?> FindSameArgumentsInQueue(AddRoomRequestDTO taskRoomRequest)
+        public async void ConnectToRoom(ConnectToRoomRequestDTO requestDTO)
         {
-            return Task.Run(() =>
-            {
-                var result = MainFindRoomQueue.FirstOrDefault(x => x.Theme.Title == taskRoomRequest.ThemeTitle && x.User.UserIp != taskRoomRequest.UserIp);
+            AnonymousUser user = await userQuery.GetByIdAsync(requestDTO.UserId);
+            //ChatRoom room = await roomQuery.GetByIdAsync(requestDTO.RoomId);
 
-                if (result == null)
-                    return null;
-
-                return result;
-            });
+            //room.Users.Add(user);
+            //user.CurrentChat = room;
+            //user.CurrentConnectionId = requestDTO.ConnectionId;
         }
     }
 }

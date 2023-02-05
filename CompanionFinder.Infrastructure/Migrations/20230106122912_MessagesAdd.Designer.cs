@@ -3,6 +3,7 @@ using System;
 using CompanionFinder.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CompanionFinder.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230106122912_MessagesAdd")]
+    partial class MessagesAdd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,7 +32,7 @@ namespace CompanionFinder.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CurrentChatId")
+                    b.Property<int>("CurrentChatId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
@@ -55,15 +57,15 @@ namespace CompanionFinder.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ConversationThemeId")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("ThemeId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ConversationThemeId");
+                    b.HasIndex("ThemeId");
 
                     b.ToTable("ChatRooms");
                 });
@@ -125,7 +127,9 @@ namespace CompanionFinder.Infrastructure.Migrations
                 {
                     b.HasOne("CompanionFinder.Domain.Entities.Core.ChatRoom", "CurrentChat")
                         .WithMany("Users")
-                        .HasForeignKey("CurrentChatId");
+                        .HasForeignKey("CurrentChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CurrentChat");
                 });
@@ -134,7 +138,7 @@ namespace CompanionFinder.Infrastructure.Migrations
                 {
                     b.HasOne("CompanionFinder.Domain.Entities.Core.ConversationTheme", "Theme")
                         .WithMany("Chats")
-                        .HasForeignKey("ConversationThemeId")
+                        .HasForeignKey("ThemeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
