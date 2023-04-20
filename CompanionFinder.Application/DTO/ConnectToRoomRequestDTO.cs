@@ -3,7 +3,6 @@
     public class ConnectToRoomRequestDTO
     {
         public int UserId { get; set; }
-        public int RoomId { get; set; }
-        public string ConnectionId { get; set; }
+        public string RoomId { get; set; }
     }
 }

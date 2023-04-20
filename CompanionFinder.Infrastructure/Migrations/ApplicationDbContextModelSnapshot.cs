@@ -30,8 +30,8 @@ namespace CompanionFinder.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CurrentChatId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ChatRoomId")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -42,18 +42,15 @@ namespace CompanionFinder.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentChatId");
+                    b.HasIndex("ChatRoomId");
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("CompanionFinder.Domain.Entities.Core.ChatRoom", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<int>("ConversationThemeId")
                         .HasColumnType("integer");
@@ -96,8 +93,9 @@ namespace CompanionFinder.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChatRoomId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ChatRoomId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("CreatedByUserId")
                         .HasColumnType("integer");
@@ -123,11 +121,9 @@ namespace CompanionFinder.Infrastructure.Migrations
 
             modelBuilder.Entity("CompanionFinder.Domain.Entities.Core.AnonymousUser", b =>
                 {
-                    b.HasOne("CompanionFinder.Domain.Entities.Core.ChatRoom", "CurrentChat")
+                    b.HasOne("CompanionFinder.Domain.Entities.Core.ChatRoom", null)
                         .WithMany("Users")
-                        .HasForeignKey("CurrentChatId");
-
-                    b.Navigation("CurrentChat");
+                        .HasForeignKey("ChatRoomId");
                 });
 
             modelBuilder.Entity("CompanionFinder.Domain.Entities.Core.ChatRoom", b =>

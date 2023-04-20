@@ -27,9 +27,11 @@ namespace CompanionFinder.Infrastructure.Services
             this.userQuery = userQuery;
         }
 
-        public async Task<int> CreateChatRoom(AddRoomDTO addRoomDTO)
+        public async Task<string> CreateChatRoom(AddRoomDTO addRoomDTO)
         {
-            var result = await chatRoomCommand.AddAsync(mapper.Map<ChatRoom>(addRoomDTO));
+            var tmp = mapper.Map<ChatRoom>(addRoomDTO);
+            tmp.Id = Guid.NewGuid().ToString();
+            var result = await chatRoomCommand.AddAsync(tmp);
 
             await chatRoomCommand.SaveChangesAsync();
 

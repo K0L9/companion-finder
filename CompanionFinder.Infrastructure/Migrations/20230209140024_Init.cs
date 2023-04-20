@@ -6,35 +6,61 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CompanionFinder.Infrastructure.Migrations
 {
-    public partial class MessagesAdd : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Users_Chats_CurrentChatId",
-                table: "Users");
-
-            migrationBuilder.DropTable(
-                name: "Chats");
+            migrationBuilder.CreateTable(
+                name: "Themes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Themes", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "ChatRooms",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ThemeId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    ConversationThemeId = table.Column<int>(type: "integer", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ChatRooms", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ChatRooms_Themes_ThemeId",
-                        column: x => x.ThemeId,
+                        name: "FK_ChatRooms_Themes_ConversationThemeId",
+                        column: x => x.ConversationThemeId,
                         principalTable: "Themes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserIp = table.Column<string>(type: "text", nullable: false),
+                    ChatRoomId = table.Column<string>(type: "text", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_ChatRooms_ChatRoomId",
+                        column: x => x.ChatRoomId,
+                        principalTable: "ChatRooms",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -46,7 +72,7 @@ namespace CompanionFinder.Infrastructure.Migrations
                     MessageText = table.Column<string>(type: "text", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedByUserId = table.Column<int>(type: "integer", nullable: false),
-                    ChatRoomId = table.Column<int>(type: "integer", nullable: false),
+                    ChatRoomId = table.Column<string>(type: "text", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -67,9 +93,9 @@ namespace CompanionFinder.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatRooms_ThemeId",
+                name: "IX_ChatRooms_ConversationThemeId",
                 table: "ChatRooms",
-                column: "ThemeId");
+                column: "ConversationThemeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatRoomId",
@@ -81,59 +107,25 @@ namespace CompanionFinder.Infrastructure.Migrations
                 table: "Messages",
                 column: "CreatedByUserId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Users_ChatRooms_CurrentChatId",
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_ChatRoomId",
                 table: "Users",
-                column: "CurrentChatId",
-                principalTable: "ChatRooms",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                column: "ChatRoomId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Users_ChatRooms_CurrentChatId",
-                table: "Users");
-
             migrationBuilder.DropTable(
                 name: "Messages");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "ChatRooms");
 
-            migrationBuilder.CreateTable(
-                name: "Chats",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ThemeId = table.Column<int>(type: "integer", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Chats", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Chats_Themes_ThemeId",
-                        column: x => x.ThemeId,
-                        principalTable: "Themes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Chats_ThemeId",
-                table: "Chats",
-                column: "ThemeId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Users_Chats_CurrentChatId",
-                table: "Users",
-                column: "CurrentChatId",
-                principalTable: "Chats",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.DropTable(
+                name: "Themes");
         }
     }
 }

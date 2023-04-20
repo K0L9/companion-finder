@@ -10,7 +10,8 @@ namespace CompanionFinder.Infrastructure.Services.Mapper
         public ChatRoomMapperProfile()
         {
             CreateMap<AddRoomDTO, ChatRoom>()
-                .ForMember(dest => dest.ConversationThemeId, opt => opt.MapFrom(src => src.ConversationThemeId));
+                .ForMember(dest => dest.ConversationThemeId, opt => opt.MapFrom(src => src.ConversationThemeId))
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
 
         }
     }

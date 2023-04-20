@@ -1,6 +1,6 @@
 ﻿namespace CompanionFinder.Domain.Entities.Core
 {
-    public class ChatRoom : BaseEntity<int>
+    public class ChatRoom : BaseEntity<string>
     {
         public int ConversationThemeId { get; set; }
 

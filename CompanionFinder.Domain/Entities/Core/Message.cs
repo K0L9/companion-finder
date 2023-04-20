@@ -7,7 +7,7 @@ namespace CompanionFinder.Domain.Entities.Core
         public string MessageText { get; set; }
         public DateTime CreatedOn { get; set; }
         public int CreatedByUserId { get; set; }
-        public int ChatRoomId { get; set; }
+        public string ChatRoomId { get; set; }
 
         //Navigation props
         [Required]

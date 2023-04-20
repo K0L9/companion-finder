@@ -5,7 +5,7 @@ namespace CompanionFinder.Application.Services
 {
     public interface IChatRoomService
     {
-        public Task<int> CreateChatRoom(AddRoomDTO addRoomDTO);
+        public Task<string> CreateChatRoom(AddRoomDTO addRoomDTO);
         public void ConnectToRoom(ConnectToRoomRequestDTO requestDTO);
 
     }

@@ -12,13 +12,13 @@ namespace CompanionFinder.Domain.Entities.Core
     {
         [Required]
         public string UserIp { get; set; }
-        public int? CurrentChatId { get; set; }
+        //public string CurrentChatId { get; set; }
 
         [NotMapped]
         public string CurrentConnectionId { get; set; }
 
         //Nav props
-        public virtual ChatRoom CurrentChat { get; set; }
+        //public virtual ChatRoom CurrentChat { get; set; }
         public virtual ICollection<Message> Messages { get; set; }
     }
 }

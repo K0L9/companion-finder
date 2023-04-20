@@ -18,11 +18,11 @@ namespace CompanionFinder.Infrastructure
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<AnonymousUser>()
-                   .HasOne(x => x.CurrentChat)
-                   .WithMany(x => x.Users)
-                   .HasForeignKey(x => x.CurrentChatId)
-                   .IsRequired(false);
+            //builder.Entity<AnonymousUser>()
+            //       .HasOne(x => x.CurrentChat)
+            //       .WithMany(x => x.Users)
+            //       .HasForeignKey(x => x.CurrentChatId)
+            //       .IsRequired(false);
 
             builder.Entity<ChatRoom>()
                  .HasOne(x => x.Theme)

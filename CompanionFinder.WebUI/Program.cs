@@ -1,4 +1,5 @@
 using CompanionFinder.Application.Commands;
+using CompanionFinder.Application.DTO;
 using CompanionFinder.Application.Queries;
 using CompanionFinder.Application.Services;
 using CompanionFinder.Infrastructure;
@@ -39,10 +40,12 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddTransient<IChatRoomService, ChatRoomService>();
 builder.Services.AddTransient<IChatRoomCommand, ChatRoomCommand>();
-builder.Services.AddSingleton<IQueueService, QueueService>();
 
 builder.Services.AddTransient<IUserQuery, UserQuery>();
 builder.Services.AddTransient<IRoomQuery, RoomQuery>();
+
+builder.Services.AddSingleton<IDictionary<string, ConnectToRoomRequestDTO>>(opts => new Dictionary<string, ConnectToRoomRequestDTO>());
+builder.Services.AddSingleton<IQueueService, QueueService>();
 
 var app = builder.Build();
 

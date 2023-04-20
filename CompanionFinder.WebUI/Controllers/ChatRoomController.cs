@@ -6,6 +6,7 @@ using CompanionFinder.Infrastructure.Hubs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Text.RegularExpressions;
 
 namespace CompanionFinder.WebUI.Controllers
 {
@@ -38,7 +39,7 @@ namespace CompanionFinder.WebUI.Controllers
                     queueService.AddRequest(requestDTO);
                 else
                 {
-                    int createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
+                    string createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
                     queueService.RemoveRequest(result);
                     await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FindedRoom(createdRoomId);
                 }
@@ -55,14 +56,14 @@ namespace CompanionFinder.WebUI.Controllers
         public async Task<IActionResult> ConnectToRoom([FromBody] ConnectToRoomRequestDTO connectDTO)
         {
             //chatRoomService.ConnectToRoom(connectDTO);
-            await roomHub.Clients.Client(connectDTO.ConnectionId).ConnectedSuccessfully();
+            //await roomHub.Clients.Client(connectDTO.ConnectionId).ConnectedSuccessfully();
             return Ok();
         }
 
         [HttpGet("test")]
         public async Task<IActionResult> Test()
         {
-            await roomHub.Clients.All.FindedRoom(1);
+            await roomHub.Clients.All.FindedRoom("1233");
             return Ok();
         }
     }

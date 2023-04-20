@@ -2,7 +2,7 @@
 
 namespace CompanionFinder.Application.Queries
 {
-    public interface IRoomQuery : IBaseQuery<ChatRoom, int>
+    public interface IRoomQuery : IBaseQuery<ChatRoom, string>
     {
     }
 }
