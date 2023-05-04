@@ -2,6 +2,7 @@
 using CompanionFinder.Application.DTO;
 using CompanionFinder.Application.Services;
 using CompanionFinder.Domain.Entities;
+using CompanionFinder.Infrastructure.Hubs;
 
 namespace CompanionFinder.Infrastructure.Services
 {
@@ -14,24 +15,33 @@ namespace CompanionFinder.Infrastructure.Services
             _requestsQueue = new List<FindRoomRequest>();
         }
 
-        public void AddRequest(FindRoomRequest requestDTO)
+        public async Task<FindRoomRequest> RequestHandleAsync(FindRoomRequest requestDTO)
+        {
+            var result = await FindSameArgumentsAsync(requestDTO);
+
+            if (result == null)
+                AddRequest(requestDTO);
+            else
+                RemoveRequest(result);
+
+            return result;
+        }
+
+        private void AddRequest(FindRoomRequest requestDTO)
         {
             _requestsQueue.Add(requestDTO);
         }
-        public void RemoveRequest(FindRoomRequest request)
+        private void RemoveRequest(FindRoomRequest request)
         {
             _requestsQueue.Remove(request);
         }
 
-        public async Task<FindRoomRequest> FindSameArgumentsAsync(FindRoomRequest requestDTO)
+        private Task<FindRoomRequest?> FindSameArgumentsAsync(FindRoomRequest requestDTO)
         {
-            return await Task.Run(() =>
+            return Task.Run(() =>
             {
                 var result = _requestsQueue.FirstOrDefault(x => x.ThemeId == requestDTO.ThemeId
                     && x.UserId != requestDTO.UserId);
-
-                if (result == null)
-                    return null;
 
                 return result;
             });

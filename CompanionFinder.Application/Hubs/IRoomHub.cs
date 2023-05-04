@@ -8,6 +8,7 @@ namespace CompanionFinder.Application.Hubs
         Task ConnectedSuccessfully();
         Task JoinRoom(ConnectToRoomRequestDTO connectionDTO);
         Task ReceiveMessage(MessageDTO message);
+        Task ServerMessage(MessageDTO message);
 
 
     }

@@ -44,7 +44,8 @@ builder.Services.AddTransient<IChatRoomCommand, ChatRoomCommand>();
 builder.Services.AddTransient<IUserQuery, UserQuery>();
 builder.Services.AddTransient<IRoomQuery, RoomQuery>();
 
-builder.Services.AddSingleton<IDictionary<string, ConnectToRoomRequestDTO>>(opts => new Dictionary<string, ConnectToRoomRequestDTO>());
+//builder.Services.AddSingleton<IDictionary<string, ConnectToRoomRequestDTO>>(opts => new Dictionary<string, ConnectToRoomRequestDTO>());
+builder.Services.AddSingleton<IList<ConnectToRoomRequestDTO>>(opts => new List<ConnectToRoomRequestDTO>());
 builder.Services.AddSingleton<IQueueService, QueueService>();
 
 var app = builder.Build();

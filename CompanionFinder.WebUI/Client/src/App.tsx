@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 
 import http from "./http_common";
@@ -11,13 +11,32 @@ import {
 
 function App() {
   const [connectionId, setConnectionId] = useState<string>();
-  const [userId, setUserId] = useState<number>(11);
+  const [userId, setUserId] = useState<number>(1);
   const [themeId, setThemeId] = useState<number>(1);
+  const [text, setText] = useState<string>();
+  const [roomId, setRoomId] = useState<string>();
 
-  var hubConnectionBuilder: HubConnection;
+  const _hubConnectionBuilder = useRef<HubConnection | null>(null);
+
+  useEffect(() => {
+    setConnection();
+  }, []);
+
+  const handleButton = async () => {
+    http
+      .post("api/handle-request", {
+        userId: userId,
+        themeId: themeId,
+        connectionId: connectionId,
+      })
+      .then((data) => {
+        console.log(data);
+      });
+  };
 
   const setConnection = () => {
-    hubConnectionBuilder = new HubConnectionBuilder()
+    console.log("test");
+    let hubConnectionBuilder = new HubConnectionBuilder()
       .withUrl("https://localhost:5001/rooms")
       .configureLogging(LogLevel.Information)
       .build();
@@ -26,41 +45,21 @@ function App() {
       .start()
       .then(() => {
         hubConnectionBuilder.invoke("getconnectionid").then((data) => {
+          console.log("connected: ", data);
           setConnectionId(data);
-          sendStayToQueueRequest(data);
         });
       })
       .catch((err) => console.log("Error while connect with server"));
 
     hubConnectionBuilder.on("FindedRoom", (result: any) => {
-      console.log(result);
-      sendConnectToRoomRequest(result);
+      console.log("roomId: ", result);
+      setRoomId(result);
+      joinRoom(result);
     });
-    hubConnectionBuilder.on("ConnectedSuccessfully", (result: any) => {
-      console.log("Connected");
+    hubConnectionBuilder.on("ServerMessage", (result: any) => {
+      console.log("Server message: ", result);
     });
-  };
-
-  const fetchData = () => {
-    http.get("api/test");
-  };
-
-  const handleStayToQueue = () => {
-    setConnection();
-  };
-  const sendStayToQueueRequest = (connectionId: string) => {
-    http.post("api/add-to-queue", {
-      userId: userId,
-      themeId: themeId,
-      connectionId: connectionId,
-    });
-  };
-  const sendConnectToRoomRequest = (roomId: number) => {
-    http.post("api/connect-to-room", {
-      userId: userId,
-      roomId: roomId,
-      connectionId: connectionId,
-    });
+    _hubConnectionBuilder.current = hubConnectionBuilder;
   };
   const handleUserIdChange = (userId: number) => {
     setUserId(userId);
@@ -69,25 +68,57 @@ function App() {
     setThemeId(parseInt(value));
   };
 
+  const buttonSendHandle = () => {
+    sendMessage(text as string);
+  };
+  const onInputChange = (event: any) => {
+    setText(event.target.value);
+  };
+  const sendMessage = (message: string) => {
+    var createdMessage = {
+      createdBy: userId,
+      message: message,
+      roomId: roomId,
+    };
+    console.log(_hubConnectionBuilder);
+    if (_hubConnectionBuilder.current)
+      _hubConnectionBuilder.current.invoke("ClientMessage", createdMessage);
+  };
+  const joinRoom = (roomId: string) => {
+    console.log("hubConnectionBuilder: ", _hubConnectionBuilder.current);
+    if (_hubConnectionBuilder.current)
+      _hubConnectionBuilder.current.invoke("JoinRoom", {
+        userId: userId,
+        connectionId: connectionId as string,
+        roomId: roomId as string,
+      });
+  };
+
   return (
-    <div>
-      <button onClick={handleStayToQueue}>Stay to queue</button>
+    <>
+      <div>
+        <button onClick={handleButton}>Stay to queue</button>
 
-      <label htmlFor="speakTheme">Choose your theme: </label>
-      <select
-        id="speakTheme"
-        onChange={(event) => handleThemeChange(event.currentTarget.value)}
-      >
-        <option value={1}>Politics</option>
-        <option value={2}>Cars</option>
-      </select>
+        <label htmlFor="speakTheme">Choose your theme: </label>
+        <select
+          id="speakTheme"
+          onChange={(event) => handleThemeChange(event.currentTarget.value)}
+        >
+          <option value={1}>Politics</option>
+          <option value={2}>Cars</option>
+        </select>
 
-      <input
-        type="number"
-        defaultValue={11}
-        onChange={(event: any) => handleUserIdChange(event.target.value)}
-      />
-    </div>
+        <input
+          type="number"
+          defaultValue={11}
+          onChange={(event: any) => handleUserIdChange(event.target.value)}
+        />
+      </div>
+      <div>
+        <input type="text" onChange={onInputChange} />
+        <button onClick={buttonSendHandle}>Send message</button>
+      </div>
+    </>
   );
 }
 
