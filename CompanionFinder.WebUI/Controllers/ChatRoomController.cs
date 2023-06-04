@@ -40,8 +40,6 @@ namespace CompanionFinder.WebUI.Controllers
                 var result = await queueService.RequestHandleAsync(requestDTO);
                 if (result == null)
                     return Ok();
-                    //return CreatedAtAction(nameof(ChatRoomService.CreateChatRoom), new { id = 0 }, requestDTO);
-                    //return Created(new Uri("handle-request"), requestDTO);
 
                 string createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
                 await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FindedRoom(createdRoomId);
