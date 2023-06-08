@@ -1,23 +1,28 @@
-import React from "react";
+import React, { useRef } from "react";
 
 interface ChatInputProps {
-  onChange: (any: any) => void;
   className: string;
   type: React.HTMLInputTypeAttribute;
-  onSubmit: () => void;
+  onSubmit: (message: string) => void;
 }
 
 const ChatInput = ({ type, className, onSubmit }: ChatInputProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const onHandleSubmit = (event: any) => {
+    event?.preventDefault();
+    if (inputRef.current?.value) onSubmit(inputRef.current?.value);
+  };
+
   return (
-    <form className="" onSubmit={onSubmit}>
-      <input type={type} className="my-input" />
+    <form className="" onSubmit={onHandleSubmit}>
+      <input type={type} ref={inputRef} className="my-input" />
       <input type="submit" value={"SEND"} />
     </form>
   );
 };
 
 ChatInput.defaultProps = {
-  onChange: () => {},
   className: "",
   type: "text",
   onSubmit: () => {},

@@ -1,16 +1,18 @@
 import React from "react";
 import { Node } from "typescript";
+import { MessageCreatorType } from "./types";
 
 interface MessageProps {
   text: string;
-  isMyMessage: boolean;
+  createdBy: MessageCreatorType;
 }
 
-const Message = ({ text, isMyMessage }: MessageProps) => {
+const Message = ({ text, createdBy }: MessageProps) => {
   return (
     <div
       className={`message-container ${
-        isMyMessage ? "" : "my-message-container"
+        (createdBy ? MessageCreatorType.me : "my-message-container",
+        createdBy ? MessageCreatorType.server : "server-message-container")
       }`}
     >
       <div className="message">{text}</div>
@@ -20,7 +22,7 @@ const Message = ({ text, isMyMessage }: MessageProps) => {
 
 Message.defaultProps = {
   text: "",
-  isMyMessage: true,
+  createdBy: MessageCreatorType.companion,
 };
 
 export default Message;

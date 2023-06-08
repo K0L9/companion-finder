@@ -2,7 +2,7 @@
 {
     public class FindRoomRequest
     {
-        public int UserId { get; set; }
+        public string? UserId { get; set; }
         public int ThemeId { get; set; }
         public string? ConnectionId { get; set; }
     }

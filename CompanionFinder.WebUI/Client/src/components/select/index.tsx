@@ -1,8 +1,9 @@
-import React from "react";
+import React, { SelectHTMLAttributes } from "react";
 
 interface SelectProps {
   options: Array<SelectOptionType>;
   className: string;
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
 }
 
 export interface SelectOptionType {
@@ -10,12 +11,16 @@ export interface SelectOptionType {
   text: string | number;
 }
 
-const Select = ({ options, className }: SelectProps) => {
-  console.log(options);
+const Select = ({ options, className, onChange }: SelectProps) => {
   return (
     <>
       <label htmlFor="my-select" className="my-select-label">
-        <select id="my-select" required className={className}>
+        <select
+          id="my-select"
+          required
+          className={className}
+          onChange={onChange}
+        >
           {options.map((x) => (
             <option value={x.value} key={x.value}>
               {x.text}
@@ -35,6 +40,6 @@ const Select = ({ options, className }: SelectProps) => {
   );
 };
 
-Select.defaultProps = { className: "" };
+Select.defaultProps = { className: "", onChange: () => {} };
 
 export default Select;

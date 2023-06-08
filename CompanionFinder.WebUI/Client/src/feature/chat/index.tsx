@@ -1,29 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Input from "../../components/chat-input";
 import Message from "./message";
+import { HubConnection } from "@microsoft/signalr";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
+import { IMessage, MessageCreatorType } from "./types";
 
 const ChatPage = () => {
-  // const sendMessage = (message: string) => {
-  //   var createdMessage = {
-  //     createdBy: userId,
-  //     message: message,
-  //     roomId: roomId,
-  //   };
-  //   console.log(_hubConnectionBuilder);
-  //   if (_hubConnectionBuilder.current)
-  //     _hubConnectionBuilder.current.invoke("ClientMessage", createdMessage);
-  // };
+  const [messages, setMessages] = useState<Array<IMessage>>([]);
+  const { hubConnection, userId, roomId } = useTypedSelector((x) => x.room);
+
+  useEffect(() => {
+    setHubConnectionHandlers();
+  });
+
+  const setHubConnectionHandlers = () => {
+    console.log("hub: ", hubConnection);
+    if (hubConnection)
+      hubConnection.on("ServerMessage", (result: IMessage) => {
+        console.log("Server message: ", result);
+        addMessage(result);
+      });
+  };
+
+  const addMessage = (message: IMessage) => {
+    if (messages.findIndex((x) => x.messageId === message.messageId) === -1)
+      setMessages((messages) => [...messages, message]);
+  };
+  const sendMessage = (message: string) => {
+    if (hubConnection) {
+      var createdMessage = {
+        createdBy: userId,
+        message: message,
+        roomId: roomId,
+        messageId: "",
+      };
+      hubConnection.invoke("ClientMessage", createdMessage);
+    }
+  };
 
   return (
     <>
       <div className="chat container-center container-shadow">
         <div className="chat-container">
-          <Message text="asdasdadas" isMyMessage={false} />
-          <Message text="asdasdadas" isMyMessage={true} />
-          <Message text="asdasdadas" isMyMessage={false} />
+          {messages.map((message: IMessage) => (
+            <Message
+              text={message.message}
+              createdBy={
+                message.createdBy === userId
+                  ? MessageCreatorType.me
+                  : MessageCreatorType.companion
+              }
+            ></Message>
+          ))}
         </div>
-
-        <Input />
+        <Input onSubmit={sendMessage} />
       </div>
     </>
   );

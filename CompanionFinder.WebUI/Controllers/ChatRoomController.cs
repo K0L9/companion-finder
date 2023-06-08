@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CompanionFinder.WebUI.Controllers
 {
-    [Route("api/")]
+    [Route("api/chat-room")]
     [ApiController]
     public class ChatRoomController : Controller
     {
@@ -42,7 +42,7 @@ namespace CompanionFinder.WebUI.Controllers
                     return Ok();
 
                 string createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
-                await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FindedRoom(createdRoomId);
+                await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FoundedRoom(createdRoomId);
 
                 return CreatedAtAction(nameof(HandleRequest), new { id = createdRoomId }, createdRoomId);
             }
@@ -62,7 +62,7 @@ namespace CompanionFinder.WebUI.Controllers
         [HttpGet("test")]
         public async Task<IActionResult> Test()
         {
-            await roomHub.Clients.All.FindedRoom("1233");
+            await roomHub.Clients.All.FoundedRoom("1233");
             return Ok();
         }
     }

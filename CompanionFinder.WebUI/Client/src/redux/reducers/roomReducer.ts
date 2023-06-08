@@ -4,6 +4,8 @@ import { RoomState, RoomAction } from "../types/types";
 const initialState: RoomState = {
   hubConnection: null,
   roomId: null,
+  connectionId: null,
+  userId: null,
 };
 
 export const roomReducer = (state = initialState, action: RoomAction) => {
@@ -18,6 +20,18 @@ export const roomReducer = (state = initialState, action: RoomAction) => {
       return {
         ...state,
         roomId: action.payload,
+      };
+    }
+    case RoomActionTypes.WRITE_CONNECTION_ID: {
+      return {
+        ...state,
+        connectionId: action.payload,
+      };
+    }
+    case RoomActionTypes.WRITE_USER_ID: {
+      return {
+        ...state,
+        userId: action.payload,
       };
     }
     default: {
