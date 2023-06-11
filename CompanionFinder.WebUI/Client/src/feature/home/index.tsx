@@ -10,17 +10,15 @@ import {
 import http from "../../http_common";
 import { useActions } from "../../hooks/useActions";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
-import { RoomSearchState } from "./types";
+import { ConversationTheme, RoomSearchState } from "./types";
 import { getUserIdAsync } from "./service";
 
 import { useNavigate } from "react-router-dom";
 import QueuePendingBar from "./queuePendingBar";
+import { toast } from "react-toastify";
 
 const HomePage: React.FC = () => {
-  const options = [
-    { text: "Politics", value: 1 },
-    { text: "Haha", value: 2 },
-  ];
+  const [themes, setThemes] = useState<Array<ConversationTheme>>([]);
   const [themeId, setThemeId] = useState<number>(1);
   const [currentFindState, setCurrentState] = useState<RoomSearchState>(
     RoomSearchState.NOT_CONNECTED
@@ -44,6 +42,7 @@ const HomePage: React.FC = () => {
       await setUserId();
       setConnection();
       setCurrentState(RoomSearchState.CONNECTED);
+      await fetchThemes();
     })();
     return () => {
       removeHubConnectionHandlers();
@@ -56,6 +55,17 @@ const HomePage: React.FC = () => {
       removeHubConnectionHandlers();
     };
   }, [hubConnection, userId, connectionId]);
+
+  const fetchThemes = async () => {
+    await http
+      .get<Array<ConversationTheme>>("/api/theme/get-all")
+      .then((result) => {
+        setThemes(result.data);
+      })
+      .catch((error: PromiseLike<Array<ConversationTheme>>) => {
+        toast.error("Error. Try again");
+      });
+  };
 
   const setConnection = () => {
     const hubConnectionBuilder = new HubConnectionBuilder()
@@ -118,7 +128,18 @@ const HomePage: React.FC = () => {
 
   const onStartButton = async () => {
     http
-      .post("api/chat-room/handle-request", {
+      .post("api/chat-room/add-request", {
+        userId: userId,
+        themeId: themeId,
+        connectionId: connectionId,
+      })
+      .then((data) => {
+        setCurrentState(RoomSearchState.IN_QUEUE);
+      });
+  };
+  const onStopButton = async () => {
+    http
+      .post("api/chat-room/remove-request", {
         userId: userId,
         themeId: themeId,
         connectionId: connectionId,
@@ -137,10 +158,23 @@ const HomePage: React.FC = () => {
       {currentFindState === RoomSearchState.IN_QUEUE && <QueuePendingBar />}
 
       <div id="main-div" className="container-shadow container-center">
-        <Select options={options} onChange={onThemeChange}></Select>
+        <Select
+          options={themes.map((x) => ({
+            value: x.id || "",
+            text: x.title || "",
+          }))}
+          onChange={onThemeChange}
+          disabled={currentFindState === RoomSearchState.IN_QUEUE}
+        />
         <Button
-          text="START"
-          onClick={onStartButton}
+          text={
+            currentFindState === RoomSearchState.IN_QUEUE ? "STOP" : "START"
+          }
+          onClick={
+            currentFindState === RoomSearchState.IN_QUEUE
+              ? onStartButton
+              : onStopButton
+          }
           className="main-div-button"
         />
       </div>

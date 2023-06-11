@@ -4,6 +4,8 @@ import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import HomePage from "./feature/home";
 import ChatPage from "./feature/chat";
+import AdminPage from "./feature/admin";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -11,7 +13,9 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/chat" element={<ChatPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
+      <ToastContainer pauseOnHover={false} pauseOnFocusLoss={false} />
     </>
   );
 }

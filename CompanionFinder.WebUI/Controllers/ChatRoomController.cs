@@ -32,8 +32,8 @@ namespace CompanionFinder.WebUI.Controllers
 
         // POST: ChatRoomController/Delete/5
         //[ValidateAntiForgeryToken]
-        [HttpPost("handle-request")]
-        public async Task<IActionResult> HandleRequest([FromBody] FindRoomRequest requestDTO)
+        [HttpPost("add-request")]
+        public async Task<IActionResult> AddRequest([FromBody] FindRoomRequest requestDTO)
         {
             try
             {
@@ -44,7 +44,27 @@ namespace CompanionFinder.WebUI.Controllers
                 string createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
                 await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FoundedRoom(createdRoomId);
 
-                return CreatedAtAction(nameof(HandleRequest), new { id = createdRoomId }, createdRoomId);
+                return CreatedAtAction(nameof(AddRequest), new { id = createdRoomId }, createdRoomId);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("remove-request")]
+        public async Task<IActionResult> RemoveRequest([FromBody] FindRoomRequest requestDTO)
+        {
+            try
+            {
+                var result = await queueService.RequestHandleAsync(requestDTO);
+                if (result == null)
+                    return Ok();
+
+                string createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
+                await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FoundedRoom(createdRoomId);
+
+                return CreatedAtAction(nameof(AddRequest), new { id = createdRoomId }, createdRoomId);
             }
             catch
             {

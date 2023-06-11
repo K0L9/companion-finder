@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import loading from "../../images/loading-ready.gif";
-import calculateTimeInSeconds from "./service";
 import { useIdleTimer } from "react-idle-timer";
 
 interface ICountdown {

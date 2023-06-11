@@ -6,3 +6,8 @@ export enum RoomSearchState {
   CONNECTING,
   IN_ROOM,
 }
+
+export type ConversationTheme = {
+  title: string | null | undefined;
+  id: number | null | undefined;
+};
