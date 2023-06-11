@@ -25,7 +25,12 @@ namespace CompanionFinder.Infrastructure.Hubs
 
             _connections.Add(connectionDTO);
 
-            await Clients.Group(connectionDTO.RoomId).ServerMessage(new MessageDTO() { CreatedBy = "Server", Message = "Connected", RoomId = connectionDTO.RoomId });
+            //await Clients.Group(connectionDTO.RoomId).ServerMessage(new MessageDTO() { CreatedBy = "Server", Message = "Connected", RoomId = connectionDTO.RoomId });
+
+            //var opponent = _connections.FirstOrDefault(x => x.RoomId == connectionDTO.RoomId && connectionDTO.UserId != x.UserId);
+
+            //if (opponent != null)
+            //    await Clients.Client(opponent.ConnectionId).ServerMessage(new MessageDTO() { CreatedBy = "Server", Message = "Opponent connected", RoomId = connectionDTO.RoomId });
         }
 
         public async Task ClientMessage(MessageDTO message)

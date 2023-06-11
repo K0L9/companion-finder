@@ -1,25 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Input from "../../components/chat-input";
 import Message from "./message";
 import { HubConnection } from "@microsoft/signalr";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
 import { IMessage, MessageCreatorType } from "./types";
+import { useNavigate } from "react-router-dom";
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Array<IMessage>>([]);
   const { hubConnection, userId, roomId } = useTypedSelector((x) => x.room);
+  const navigator = useNavigate();
+  const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!hubConnection) disconnect();
     setHubConnectionHandlers();
-  });
+    return () => {
+      removeHubConnectionHandlers();
+    };
+  }, []);
+
+  useEffect(() => {
+    divRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const setHubConnectionHandlers = () => {
-    console.log("hub: ", hubConnection);
-    if (hubConnection)
+    if (hubConnection) {
       hubConnection.on("ServerMessage", (result: IMessage) => {
-        console.log("Server message: ", result);
         addMessage(result);
       });
+    }
+  };
+  const removeHubConnectionHandlers = () => {
+    if (hubConnection) {
+      hubConnection.off("ServerMessage");
+    }
   };
 
   const addMessage = (message: IMessage) => {
@@ -35,25 +50,28 @@ const ChatPage = () => {
         messageId: "",
       };
       hubConnection.invoke("ClientMessage", createdMessage);
+    } else {
+      disconnect();
     }
+  };
+
+  const disconnect = () => {
+    console.log("disconnect");
+    navigator("/");
   };
 
   return (
     <>
       <div className="chat container-center container-shadow">
         <div className="chat-container">
-          {messages.map((message: IMessage) => (
-            <Message
-              text={message.message}
-              createdBy={
-                message.createdBy === userId
-                  ? MessageCreatorType.me
-                  : MessageCreatorType.companion
-              }
-            ></Message>
+          {messages.map((message: IMessage, index: number) => (
+            <Message key={index} message={message} />
           ))}
+          <div ref={divRef} />
         </div>
-        <Input onSubmit={sendMessage} />
+        <div className="input-container">
+          <Input onSubmit={sendMessage} />
+        </div>
       </div>
     </>
   );

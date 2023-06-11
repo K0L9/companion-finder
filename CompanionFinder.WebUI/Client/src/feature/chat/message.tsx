@@ -1,28 +1,29 @@
 import React from "react";
 import { Node } from "typescript";
-import { MessageCreatorType } from "./types";
+import { IMessage, MessageCreatorType } from "./types";
+import { useTypedSelector } from "../../hooks/useTypedSelector";
 
 interface MessageProps {
-  text: string;
-  createdBy: MessageCreatorType;
+  message: IMessage | null;
 }
 
-const Message = ({ text, createdBy }: MessageProps) => {
+const Message = ({ message }: MessageProps) => {
+  const { userId } = useTypedSelector((x) => x.room);
+
+  const getClassName = () => {
+    if (message?.createdBy === "Server") return "server-message-container";
+    if (message?.createdBy === userId) return "my-message-container";
+  };
+
   return (
-    <div
-      className={`message-container ${
-        (createdBy ? MessageCreatorType.me : "my-message-container",
-        createdBy ? MessageCreatorType.server : "server-message-container")
-      }`}
-    >
-      <div className="message">{text}</div>
+    <div className={`message-container ${getClassName()}`}>
+      <div className="message">{message?.message}</div>
     </div>
   );
 };
 
 Message.defaultProps = {
-  text: "",
-  createdBy: MessageCreatorType.companion,
+  message: null,
 };
 
 export default Message;

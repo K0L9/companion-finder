@@ -12,10 +12,18 @@
     width: 65vw;
     height: 70vh;
     transform: translate(-50%, -50%) !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     .chat-container{
         overflow-y: scroll;
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
+        flex-grow: 20;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
         .message-container {
             display: flex;
@@ -36,11 +44,15 @@
             }
         }
         .server-message-container{
-            flex-direction: row-reverse;
+            justify-content: center;
 
             .message{
-                background-color: rgb(253, 0, 0);
+                font-size: 10pt;
+                color: gray;
             }
         }
+    }
+    .input-container {
+        flex-grow: 1;
     }
 }

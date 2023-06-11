@@ -14,6 +14,7 @@ import { RoomSearchState } from "./types";
 import { getUserIdAsync } from "./service";
 
 import { useNavigate } from "react-router-dom";
+import QueuePendingBar from "./queuePendingBar";
 
 const HomePage: React.FC = () => {
   const options = [
@@ -44,10 +45,16 @@ const HomePage: React.FC = () => {
       setConnection();
       setCurrentState(RoomSearchState.CONNECTED);
     })();
+    return () => {
+      removeHubConnectionHandlers();
+    };
   }, []);
 
   useEffect(() => {
     if (hubConnection) setHubConnectionHandlers(hubConnection);
+    return () => {
+      removeHubConnectionHandlers();
+    };
   }, [hubConnection, userId, connectionId]);
 
   const setConnection = () => {
@@ -72,7 +79,11 @@ const HomePage: React.FC = () => {
   };
 
   const setHubConnectionHandlers = (hubConnectionBuilder: HubConnection) => {
-    hubConnectionBuilder.on("FoundedRoom", foundedRoomHandler);
+    if (hubConnectionBuilder)
+      hubConnectionBuilder.on("FoundedRoom", foundedRoomHandler);
+  };
+  const removeHubConnectionHandlers = () => {
+    if (hubConnection) hubConnection.off("FoundedRoom");
   };
 
   const setUserId = async () => {
@@ -113,7 +124,6 @@ const HomePage: React.FC = () => {
         connectionId: connectionId,
       })
       .then((data) => {
-        console.log(data);
         setCurrentState(RoomSearchState.IN_QUEUE);
       });
   };
@@ -124,8 +134,9 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+      {currentFindState === RoomSearchState.IN_QUEUE && <QueuePendingBar />}
+
       <div id="main-div" className="container-shadow container-center">
-        {currentFindState.toString()}
         <Select options={options} onChange={onThemeChange}></Select>
         <Button
           text="START"
