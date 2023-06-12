@@ -7,8 +7,31 @@ import { IMessage, MessageCreatorType } from "./types";
 import { useNavigate } from "react-router-dom";
 
 const ChatPage = () => {
-  const [messages, setMessages] = useState<Array<IMessage>>([]);
   const { hubConnection, userId, roomId } = useTypedSelector((x) => x.room);
+
+  const [messages, setMessages] = useState<Array<IMessage>>([
+    {
+      createdAt: null,
+      createdBy: "Server",
+      message: "Welcome to chat",
+      roomId: "",
+      messageId: "",
+    },
+    {
+      createdAt: null,
+      createdBy: "Server",
+      message: "You can text now",
+      roomId: "",
+      messageId: "",
+    },
+    {
+      createdAt: null,
+      createdBy: "Server",
+      message: "Be careful!",
+      roomId: "",
+      messageId: "",
+    },
+  ]);
   const navigator = useNavigate();
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -48,6 +71,7 @@ const ChatPage = () => {
         message: message,
         roomId: roomId,
         messageId: "",
+        createdAt: new Date(Date.now()).toJSON(),
       };
       hubConnection.invoke("ClientMessage", createdMessage);
     } else {

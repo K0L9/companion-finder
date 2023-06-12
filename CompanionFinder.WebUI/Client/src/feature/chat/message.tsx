@@ -15,9 +15,22 @@ const Message = ({ message }: MessageProps) => {
     if (message?.createdBy === userId) return "my-message-container";
   };
 
+  const getDate = () => {
+    if (message && message.createdAt)
+      return new Date(Date.parse(message?.createdAt?.toString()));
+  };
+
+  console.log(getDate());
+
   return (
     <div className={`message-container ${getClassName()}`}>
       <div className="message">{message?.message}</div>
+
+      {getDate() !== null && getDate() !== undefined && (
+        <span className="time-container">
+          {getDate()?.getHours()}:{getDate()?.getMinutes()}
+        </span>
+      )}
     </div>
   );
 };

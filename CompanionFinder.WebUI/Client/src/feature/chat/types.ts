@@ -9,4 +9,5 @@ export interface IMessage {
   message: string;
   roomId: string;
   messageId: string;
+  createdAt: Date | null | undefined;
 }
