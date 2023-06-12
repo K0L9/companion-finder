@@ -1,0 +1,24 @@
+.chat-input-form{
+    height: 100%;
+    display: flex;
+    input[type=text] {
+        flex-grow: 10;
+        padding: 5px 15px;
+        border: none;
+        font-size: 13pt;
+        &:focus{
+            outline: none
+        }
+
+    }
+    button {
+        flex-grow: 1;
+        font-size: 20pt;
+        background-color: transparent;
+        border: none;
+
+        &:hover {
+            color: rgb(151, 151, 151);
+        }
+    }
+}

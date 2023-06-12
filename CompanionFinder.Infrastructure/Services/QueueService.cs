@@ -2,39 +2,55 @@
 using CompanionFinder.Application.DTO;
 using CompanionFinder.Application.Services;
 using CompanionFinder.Domain.Entities;
+using CompanionFinder.Infrastructure.Hubs;
 
 namespace CompanionFinder.Infrastructure.Services
 {
     public class QueueService : IQueueService
     {
-        private List<FindRoomRequest> _requestsQueue;
+        private IList<FindRoomRequest> requestsQueue;
 
-        public QueueService(IMapper mapper)
+        public QueueService(IMapper mapper, IList<FindRoomRequest> requestsQueue)
         {
-            _requestsQueue = new List<FindRoomRequest>();
+            //this.requestsQueue = new List<FindRoomRequest>();
+            this.requestsQueue = requestsQueue;
         }
 
-        public void AddRequest(FindRoomRequest requestDTO)
+        public async Task<FindRoomRequest> RequestHandleAsync(FindRoomRequest requestDTO)
         {
-            _requestsQueue.Add(requestDTO);
-        }
-        public void RemoveRequest(FindRoomRequest request)
-        {
-            _requestsQueue.Remove(request);
+            var result = await FindSameArgumentsAsync(requestDTO);
+
+            if (result == null)
+                AddRequest(requestDTO);
+            else
+                RemoveRequest(result);
+
+            return result;
         }
 
-        public async Task<FindRoomRequest> FindSameArgumentsAsync(FindRoomRequest requestDTO)
+        private void AddRequest(FindRoomRequest requestDTO)
         {
-            return await Task.Run(() =>
+            requestsQueue.Add(requestDTO);
+        }
+        private void RemoveRequest(FindRoomRequest request)
+        {
+            requestsQueue.Remove(request);
+        }
+
+        private Task<FindRoomRequest?> FindSameArgumentsAsync(FindRoomRequest requestDTO)
+        {
+            return Task.Run(() =>
             {
-                var result = _requestsQueue.FirstOrDefault(x => x.ThemeId == requestDTO.ThemeId
+                var result = requestsQueue.FirstOrDefault(x => x.ThemeId == requestDTO.ThemeId
                     && x.UserId != requestDTO.UserId);
-
-                if (result == null)
-                    return null;
 
                 return result;
             });
+        }
+
+        public void DeleteRequest(FindRoomRequest requestDTO)
+        {
+            requestsQueue.Remove(requestDTO);
         }
     }
 }

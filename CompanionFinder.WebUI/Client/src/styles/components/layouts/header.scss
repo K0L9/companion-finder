@@ -1,0 +1,13 @@
+#header {
+    height: max(50px, 15vh);
+    background: #F5F5F5;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.25);
+    padding: 10px;
+    
+    img {
+        height: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
+}

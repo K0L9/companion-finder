@@ -1,18 +1,30 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import './index.css';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+// import { store } from "./app/store";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
 
-const container = document.getElementById('root')!;
+import "./styles/theme.scss";
+import "./index.css";
+
+import { createBrowserHistory } from "history";
+import configureStore from "./store/configureStore";
+
+const container = document.getElementById("root")!;
 const root = createRoot(container);
+
+const history = createBrowserHistory();
+//@ts-ignore
+const store = configureStore(history);
 
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>
 );

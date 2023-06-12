@@ -1,0 +1,19 @@
+.admin-container {
+    max-width: 100vw;
+    height: calc(100vh - 100px);
+    padding: 50px;
+    margin: 50px;
+
+    overflow-y: scroll;
+    &::-webkit-scrollbar { 
+        display: none; 
+    }
+
+    .add-new-row{   
+        margin-top: 15px;
+        .admin-add-input{
+            margin-right: 10px;
+            height: 40px;
+        }
+    }
+}

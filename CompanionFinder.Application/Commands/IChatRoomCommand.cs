@@ -2,7 +2,7 @@
 
 namespace CompanionFinder.Application.Commands
 {
-    public interface IChatRoomCommand: IBaseCommand<ChatRoom, int>
+    public interface IChatRoomCommand: IBaseCommand<ChatRoom, string>
     {
     }
 }

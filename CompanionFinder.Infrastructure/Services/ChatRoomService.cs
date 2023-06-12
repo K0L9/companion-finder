@@ -10,35 +10,40 @@ namespace CompanionFinder.Infrastructure.Services
 {
     public class ChatRoomService : IChatRoomService
     {
-        private List<FindRoomRequest> _mainFindRoomQueue;
-        private readonly IChatRoomCommand chatRoomCommand;
-        private readonly IQueueService queueService;
-        private readonly IMapper mapper;
-        private readonly IRoomQuery roomQuery;
-        private readonly IUserQuery userQuery;
+        //private List<FindRoomRequest> _mainFindRoomQueue;
 
-        public ChatRoomService(IChatRoomCommand chatRoomCommand, IQueueService queueService, IMapper mapper, IRoomQuery roomQuery, IUserQuery userQuery)
+        private readonly IChatRoomCommand chatRoomCommand;
+        //private readonly IQueueService queueService;
+        private readonly IMapper mapper;
+        //private readonly IRoomQuery roomQuery;
+        //private readonly IUserQuery userQuery;
+
+        public ChatRoomService(IChatRoomCommand chatRoomCommand, IMapper mapper)
         {
-            _mainFindRoomQueue = new List<FindRoomRequest>();
+            //_mainFindRoomQueue = new List<FindRoomRequest>();
             this.chatRoomCommand = chatRoomCommand;
-            this.queueService = queueService;
+            //this.queueService = queueService;
             this.mapper = mapper;
-            this.roomQuery = roomQuery;
-            this.userQuery = userQuery;
+            //this.roomQuery = roomQuery;
+            //this.userQuery = userQuery;
         }
 
-        public async Task<int> CreateChatRoom(AddRoomDTO addRoomDTO)
+        public async Task<string> CreateChatRoom(AddRoomDTO addRoomDTO)
         {
-            var result = await chatRoomCommand.AddAsync(mapper.Map<ChatRoom>(addRoomDTO));
+            var tmp = mapper.Map<ChatRoom>(addRoomDTO);
+            tmp.Id = Guid.NewGuid().ToString();
+            var result = await chatRoomCommand.AddAsync(tmp);
 
             await chatRoomCommand.SaveChangesAsync();
 
             return result.Id;
+
+            return " ";
         }
 
         public async void ConnectToRoom(ConnectToRoomRequestDTO requestDTO)
         {
-            AnonymousUser user = await userQuery.GetByIdAsync(requestDTO.UserId);
+            //AnonymousUser user = await userQuery.GetByIdAsync(requestDTO.UserId);
             //ChatRoom room = await roomQuery.GetByIdAsync(requestDTO.RoomId);
 
             //room.Users.Add(user);

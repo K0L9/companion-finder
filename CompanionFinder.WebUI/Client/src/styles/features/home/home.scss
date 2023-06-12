@@ -1,0 +1,15 @@
+@import "./queuePendingBar.scss";
+
+#main-div{
+    width: 400px;
+    height: auto;
+    
+    padding: 30px;
+
+    .main-div-button{
+        display:inline-block;
+
+        display: block;
+        margin: 30px auto 0 auto;
+    }
+}

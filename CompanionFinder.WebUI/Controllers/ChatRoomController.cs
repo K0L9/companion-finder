@@ -3,13 +3,18 @@ using CompanionFinder.Application.Hubs;
 using CompanionFinder.Application.Services;
 using CompanionFinder.Domain.Entities;
 using CompanionFinder.Infrastructure.Hubs;
+using CompanionFinder.Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace CompanionFinder.WebUI.Controllers
 {
-    [Route("api/")]
+    [Route("api/chat-room")]
     [ApiController]
     public class ChatRoomController : Controller
     {
@@ -18,51 +23,53 @@ namespace CompanionFinder.WebUI.Controllers
 
         private IHubContext<RoomHub, IRoomHub> roomHub;
 
-        public ChatRoomController(IChatRoomService chatRoomService, IHubContext<RoomHub, IRoomHub> roomHub, IQueueService queueService)
+        public ChatRoomController(IHubContext<RoomHub, IRoomHub> roomHub, IQueueService queueService, IChatRoomService chatRoomService)
         {
-            this.chatRoomService = chatRoomService;
             this.roomHub = roomHub;
             this.queueService = queueService;
+            this.chatRoomService = chatRoomService;
         }
 
         // POST: ChatRoomController/Delete/5
         //[ValidateAntiForgeryToken]
-        [HttpPost("add-to-queue")]
-        public async Task<IActionResult> AddRequestToQueue([FromBody] FindRoomRequest requestDTO)
+        [HttpPost("add-request")]
+        public async Task<IActionResult> AddRequest([FromBody] FindRoomRequest requestDTO)
         {
             try
             {
-                var result = await queueService.FindSameArgumentsAsync(requestDTO);
-
+                var result = await queueService.RequestHandleAsync(requestDTO);
                 if (result == null)
-                    queueService.AddRequest(requestDTO);
-                else
-                {
-                    int createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
-                    queueService.RemoveRequest(result);
-                    await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FindedRoom(createdRoomId);
-                }
+                    return Ok();
 
-                return Ok();
+                string createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
+                await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FoundedRoom(createdRoomId);
 
+                return CreatedAtAction(nameof(AddRequest), new { id = createdRoomId }, createdRoomId);
             }
             catch
             {
                 return BadRequest();
             }
         }
-        [HttpPost("connect-to-room")]
-        public async Task<IActionResult> ConnectToRoom([FromBody] ConnectToRoomRequestDTO connectDTO)
+
+        [HttpPost("remove-request")]
+        public async Task<IActionResult> RemoveRequest([FromBody] FindRoomRequest requestDTO)
         {
-            //chatRoomService.ConnectToRoom(connectDTO);
-            await roomHub.Clients.Client(connectDTO.ConnectionId).ConnectedSuccessfully();
-            return Ok();
+            try
+            {
+                queueService.DeleteRequest(requestDTO);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet("test")]
         public async Task<IActionResult> Test()
         {
-            await roomHub.Clients.All.FindedRoom(1);
+            await roomHub.Clients.All.FoundedRoom("1233");
             return Ok();
         }
     }
