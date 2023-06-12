@@ -6,5 +6,6 @@ namespace CompanionFinder.Application.Services
     public interface IQueueService
     {
         public Task<FindRoomRequest> RequestHandleAsync(FindRoomRequest requestDTO);
+        public void DeleteRequest(FindRoomRequest requestDTO);
     }
 }

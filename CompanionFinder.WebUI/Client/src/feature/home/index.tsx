@@ -43,9 +43,11 @@ const HomePage: React.FC = () => {
       setConnection();
       setCurrentState(RoomSearchState.CONNECTED);
       await fetchThemes();
+      window.addEventListener("beforeunload", onStopButton);
     })();
     return () => {
       removeHubConnectionHandlers();
+      window.removeEventListener("beforeunload", onStopButton);
     };
   }, []);
 
@@ -64,6 +66,7 @@ const HomePage: React.FC = () => {
       })
       .catch((error: PromiseLike<Array<ConversationTheme>>) => {
         toast.error("Error. Try again");
+        setCurrentState(RoomSearchState.NOT_CONNECTED);
       });
   };
 
@@ -98,10 +101,16 @@ const HomePage: React.FC = () => {
 
   const setUserId = async () => {
     let userId = await getUserIdAsync();
-    writeUserId(userId);
+    if (userId) writeUserId(userId);
+    else {
+      toast.error("Some error");
+      setCurrentState(RoomSearchState.NOT_CONNECTED);
+    }
   };
 
   const joinRoom = async (roomId: string) => {
+    console.log("hubConnection: ", hubConnection);
+
     if (hubConnection) {
       await hubConnection.invoke("JoinRoom", {
         userId: userId,
@@ -116,6 +125,7 @@ const HomePage: React.FC = () => {
   };
 
   const foundedRoomHandler = async (roomId: any) => {
+    console.log("FOUNDED");
     setCurrentState(RoomSearchState.FOUNDED_ROOM);
     writeRoomId(roomId);
     setCurrentState(RoomSearchState.CONNECTING);
@@ -135,6 +145,10 @@ const HomePage: React.FC = () => {
       })
       .then((data) => {
         setCurrentState(RoomSearchState.IN_QUEUE);
+      })
+      .catch((data) => {
+        setCurrentState(RoomSearchState.NOT_CONNECTED);
+        toast.error("Some error.");
       });
   };
   const onStopButton = async () => {
@@ -145,7 +159,12 @@ const HomePage: React.FC = () => {
         connectionId: connectionId,
       })
       .then((data) => {
-        setCurrentState(RoomSearchState.IN_QUEUE);
+        setCurrentState(RoomSearchState.CONNECTED);
+        toast.success("Successfully deleted");
+      })
+      .catch((data) => {
+        setCurrentState(RoomSearchState.NOT_CONNECTED);
+        toast.error("Some error.");
       });
   };
 
@@ -172,8 +191,8 @@ const HomePage: React.FC = () => {
           }
           onClick={
             currentFindState === RoomSearchState.IN_QUEUE
-              ? onStartButton
-              : onStopButton
+              ? onStopButton
+              : onStartButton
           }
           className="main-div-button"
         />

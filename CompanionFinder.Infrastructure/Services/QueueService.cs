@@ -8,11 +8,12 @@ namespace CompanionFinder.Infrastructure.Services
 {
     public class QueueService : IQueueService
     {
-        private List<FindRoomRequest> _requestsQueue;
+        private IList<FindRoomRequest> requestsQueue;
 
-        public QueueService(IMapper mapper)
+        public QueueService(IMapper mapper, IList<FindRoomRequest> requestsQueue)
         {
-            _requestsQueue = new List<FindRoomRequest>();
+            //this.requestsQueue = new List<FindRoomRequest>();
+            this.requestsQueue = requestsQueue;
         }
 
         public async Task<FindRoomRequest> RequestHandleAsync(FindRoomRequest requestDTO)
@@ -29,22 +30,27 @@ namespace CompanionFinder.Infrastructure.Services
 
         private void AddRequest(FindRoomRequest requestDTO)
         {
-            _requestsQueue.Add(requestDTO);
+            requestsQueue.Add(requestDTO);
         }
         private void RemoveRequest(FindRoomRequest request)
         {
-            _requestsQueue.Remove(request);
+            requestsQueue.Remove(request);
         }
 
         private Task<FindRoomRequest?> FindSameArgumentsAsync(FindRoomRequest requestDTO)
         {
             return Task.Run(() =>
             {
-                var result = _requestsQueue.FirstOrDefault(x => x.ThemeId == requestDTO.ThemeId
+                var result = requestsQueue.FirstOrDefault(x => x.ThemeId == requestDTO.ThemeId
                     && x.UserId != requestDTO.UserId);
 
                 return result;
             });
+        }
+
+        public void DeleteRequest(FindRoomRequest requestDTO)
+        {
+            requestsQueue.Remove(requestDTO);
         }
     }
 }

@@ -57,26 +57,13 @@ namespace CompanionFinder.WebUI.Controllers
         {
             try
             {
-                var result = await queueService.RequestHandleAsync(requestDTO);
-                if (result == null)
-                    return Ok();
-
-                string createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
-                await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FoundedRoom(createdRoomId);
-
-                return CreatedAtAction(nameof(AddRequest), new { id = createdRoomId }, createdRoomId);
+                queueService.DeleteRequest(requestDTO);
+                return Ok();
             }
             catch
             {
                 return BadRequest();
             }
-        }
-        [HttpPost("connect-to-room")]
-        public async Task<IActionResult> ConnectToRoom([FromBody] ConnectToRoomRequestDTO connectDTO)
-        {
-            //chatRoomService.ConnectToRoom(connectDTO);
-            //await roomHub.Clients.Client(connectDTO.ConnectionId).ConnectedSuccessfully();
-            return Ok();
         }
 
         [HttpGet("test")]

@@ -3,6 +3,7 @@ using CompanionFinder.Application.Commands;
 using CompanionFinder.Application.DTO;
 using CompanionFinder.Application.Queries;
 using CompanionFinder.Application.Services;
+using CompanionFinder.Domain.Entities;
 using CompanionFinder.Infrastructure;
 using CompanionFinder.Infrastructure.Commands;
 using CompanionFinder.Infrastructure.Hubs;
@@ -38,8 +39,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(ChatRoomMapperProfile).Assembly));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+//builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(ChatRoomMapperProfile).Assembly));
 
 builder.Services.AddTransient<IChatRoomService, ChatRoomService>();
 builder.Services.AddTransient<IChatRoomCommand, ChatRoomCommand>();
@@ -51,6 +52,7 @@ builder.Services.AddTransient<IThemeQuery, ThemeQuery>();
 
 //builder.Services.AddSingleton<IDictionary<string, ConnectToRoomRequestDTO>>(opts => new Dictionary<string, ConnectToRoomRequestDTO>());
 builder.Services.AddSingleton<IList<ConnectToRoomRequestDTO>>(opts => new List<ConnectToRoomRequestDTO>());
+builder.Services.AddSingleton<IList<FindRoomRequest>>(opts => new List<FindRoomRequest>());
 builder.Services.AddTransient<IQueueService, QueueService>();
 builder.Services.AddTransient<IThemeService, ThemeService>();
 

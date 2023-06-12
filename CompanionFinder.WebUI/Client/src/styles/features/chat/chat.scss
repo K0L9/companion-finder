@@ -27,12 +27,13 @@
 
         .message-container {
             display: flex;
-            padding: 10px 15px ;
+            padding: 10px 15px;
 
             .message {
-                background-color: rgb(245, 245, 245);
+                background-color: #e4e5e7;
                 max-width: 30%;
                 border-radius: 13px;
+                padding: 5px;
             }
         }
 
@@ -40,7 +41,9 @@
             flex-direction: row-reverse;
 
             .message{
-                background-color: rgb(177, 177, 177);
+                // background-color: rgb(177, 177, 177);
+                background: rgb(220,236,244);
+                background: linear-gradient(144deg, rgba(220,236,244,1) 0%, rgba(245,196,195,1) 48%, rgba(136,207,241,1) 90%);
             }
         }
         .server-message-container{
