@@ -16,12 +16,13 @@ import { getUserIdAsync } from "./service";
 import { useNavigate } from "react-router-dom";
 import QueuePendingBar from "./queuePendingBar";
 import { toast } from "react-toastify";
+import ErrorScreen from "../../components/containers/defaultLayout/errorScreen";
 
 const HomePage: React.FC = () => {
   const [themes, setThemes] = useState<Array<ConversationTheme>>([]);
   const [themeId, setThemeId] = useState<number>(1);
   const [currentFindState, setCurrentState] = useState<RoomSearchState>(
-    RoomSearchState.NOT_CONNECTED
+    RoomSearchState.DEFAULT
   );
 
   const {
@@ -174,6 +175,10 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+      {currentFindState === RoomSearchState.NOT_CONNECTED && (
+        <ErrorScreen text="Error with connecting to server. Try again and ask me to fix it" />
+      )}
+
       {currentFindState === RoomSearchState.IN_QUEUE && <QueuePendingBar />}
 
       <div id="main-div" className="container-shadow container-center">

@@ -1,4 +1,5 @@
 export enum RoomSearchState {
+  DEFAULT,
   NOT_CONNECTED,
   CONNECTED,
   IN_QUEUE,
