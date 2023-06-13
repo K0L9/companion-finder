@@ -13,6 +13,7 @@ const Message = ({ message }: MessageProps) => {
   const getClassName = () => {
     if (message?.createdBy === "Server") return "server-message-container";
     if (message?.createdBy === userId) return "my-message-container";
+    else return "opponent-message-container";
   };
 
   const getDate = () => {

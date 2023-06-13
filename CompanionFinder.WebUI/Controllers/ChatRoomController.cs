@@ -3,14 +3,8 @@ using CompanionFinder.Application.Hubs;
 using CompanionFinder.Application.Services;
 using CompanionFinder.Domain.Entities;
 using CompanionFinder.Infrastructure.Hubs;
-using CompanionFinder.Infrastructure.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace CompanionFinder.WebUI.Controllers
 {

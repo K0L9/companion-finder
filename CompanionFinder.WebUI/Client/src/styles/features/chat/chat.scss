@@ -19,7 +19,7 @@
         overflow-y: scroll;
         display: flex;
         flex-direction: column;
-        flex-grow: 20;
+        flex-basis: 91%;
 
         &::-webkit-scrollbar {
             display: none;
@@ -30,10 +30,10 @@
             padding: 10px 15px;
 
             .message {
-                background-color: #e4e5e7;
                 max-width: 30%;
                 border-radius: 13px;
-                padding: 5px;
+                padding: 5px 10px;
+                overflow-wrap: break-word;
             }
             .time-container{
                 color:rgb(194, 194, 194);
@@ -49,7 +49,12 @@
             flex-direction: row-reverse;
 
             .message{
-                // background-color: rgb(177, 177, 177);
+                background-color: #e4e5e7;
+            }
+        }
+        .opponent-message-container{
+
+            .message{
                 background: rgb(220,236,244);
                 background: linear-gradient(144deg, rgba(220,236,244,1) 0%, rgba(245,196,195,1) 48%, rgba(136,207,241,1) 90%);
             }
@@ -67,6 +72,6 @@
         }
     }
     .input-container {
-        flex-grow: 1;
+        flex-basis: 9%;
     }
 }
