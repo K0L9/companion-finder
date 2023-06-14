@@ -183,10 +183,14 @@ const HomePage: React.FC = () => {
 
       <div id="main-div" className="container-shadow container-center">
         <Select
-          options={themes.map((x) => ({
-            value: x.id || "",
-            text: x.title || "",
-          }))}
+          options={
+            themes
+              ? themes.map((x) => ({
+                  value: x.id || "",
+                  text: x.title || "",
+                }))
+              : []
+          }
           onChange={onThemeChange}
           disabled={currentFindState === RoomSearchState.IN_QUEUE}
         />

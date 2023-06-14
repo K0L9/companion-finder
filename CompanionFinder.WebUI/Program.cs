@@ -35,6 +35,11 @@ builder.Services.AddCors(options =>
         .SetIsOriginAllowed((hosts) => true));
 });
 
+builder.Services.AddSpaStaticFiles(configuration =>
+{
+    configuration.RootPath = "Client";
+});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -58,7 +63,7 @@ builder.Services.AddTransient<IThemeService, ThemeService>();
 
 var app = builder.Build();
 
-//app.UseSpaStaticFiles();
+//app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -69,6 +74,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("CORSPolicy");
 app.UseAuthorization();
+
+app.UseSpaStaticFiles(new StaticFileOptions { RequestPath = "/Client/build" });
 
 app.UseRouting();
 app.UseEndpoints(endpoints =>
