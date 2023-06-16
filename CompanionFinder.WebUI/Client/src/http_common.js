@@ -1,9 +1,10 @@
 import axios from "axios";
+import {defaultServerWay} from "./constants";
 
 const instance = axios.create({
     // baseURL: "/",
     // baseURL: "https://localhost:5001/",
-    baseURL: "https://localhost:5001/",
+    baseURL: defaultServerWay,
     headers: {
         "Content-type": "application/json",
         "Access-Control-Allow-Origin": "*",

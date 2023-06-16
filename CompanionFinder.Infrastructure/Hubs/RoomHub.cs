@@ -13,8 +13,6 @@ namespace CompanionFinder.Infrastructure.Hubs
         {
             _connections = connections;
         }
-
-
         public string GetConnectionId() => Context.ConnectionId;
 
         public async Task JoinRoom(ConnectToRoomRequestDTO connectionDTO)

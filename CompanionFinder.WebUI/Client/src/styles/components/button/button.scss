@@ -22,8 +22,17 @@
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
+
+  &:hover {
+    background-color: #F082AC;
+  }
+
+  &:disabled {
+    background-color: #ce97a7;
+  }
+  &:disabled:hover {
+    background-color: #ce97a7;
+    cursor: default;
+  }
 }
 
-.my-button:hover {
-  background-color: #F082AC;
-}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 //@ts-ignore
-// import video from "/videos/background_video.mp4";
-import video from "../../../images/background_video.mp4";
+import video from "../../../images/videos/background_video.mp4";
+// import video from "../../../images/background_video.mp4";
 // import { Player } from "video-react";
 // import  from "react-background-video-player"
 //@ts-ignore

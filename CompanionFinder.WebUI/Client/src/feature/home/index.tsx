@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import QueuePendingBar from "./queuePendingBar";
 import { toast } from "react-toastify";
 import ErrorScreen from "../../components/containers/defaultLayout/errorScreen";
+import { defaultServerWay } from "../../constants";
 
 const HomePage: React.FC = () => {
   const [themes, setThemes] = useState<Array<ConversationTheme>>([]);
@@ -42,7 +43,6 @@ const HomePage: React.FC = () => {
     (async () => {
       await setUserId();
       setConnection();
-      setCurrentState(RoomSearchState.CONNECTED);
       await fetchThemes();
       window.addEventListener("beforeunload", onStopButton);
     })();
@@ -63,7 +63,9 @@ const HomePage: React.FC = () => {
     await http
       .get<Array<ConversationTheme>>("/api/theme/get-all")
       .then((result) => {
+        console.log(result.data);
         setThemes(result.data);
+        setCurrentState(RoomSearchState.CONNECTED);
       })
       .catch((error: PromiseLike<Array<ConversationTheme>>) => {
         toast.error("Error. Try again");
@@ -73,7 +75,7 @@ const HomePage: React.FC = () => {
 
   const setConnection = () => {
     const hubConnectionBuilder = new HubConnectionBuilder()
-      .withUrl("https://localhost:5001/rooms")
+      .withUrl(`${defaultServerWay}rooms`)
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Information)
       .build();
@@ -173,6 +175,8 @@ const HomePage: React.FC = () => {
     setThemeId(event.target.value);
   };
 
+  console.log(currentFindState);
+
   return (
     <>
       {currentFindState === RoomSearchState.NOT_CONNECTED && (
@@ -180,6 +184,9 @@ const HomePage: React.FC = () => {
       )}
 
       {currentFindState === RoomSearchState.IN_QUEUE && <QueuePendingBar />}
+      {currentFindState === RoomSearchState.DEFAULT && (
+        <QueuePendingBar isText={false} />
+      )}
 
       <div id="main-div" className="container-shadow container-center">
         <Select
@@ -192,7 +199,11 @@ const HomePage: React.FC = () => {
               : []
           }
           onChange={onThemeChange}
-          disabled={currentFindState === RoomSearchState.IN_QUEUE}
+          disabled={
+            currentFindState === RoomSearchState.IN_QUEUE ||
+            currentFindState === RoomSearchState.NOT_CONNECTED ||
+            currentFindState === RoomSearchState.DEFAULT
+          }
         />
         <Button
           text={
@@ -202,6 +213,10 @@ const HomePage: React.FC = () => {
             currentFindState === RoomSearchState.IN_QUEUE
               ? onStopButton
               : onStartButton
+          }
+          disabled={
+            currentFindState === RoomSearchState.NOT_CONNECTED ||
+            currentFindState === RoomSearchState.DEFAULT
           }
           className="main-div-button"
         />
