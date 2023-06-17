@@ -1,6 +1,7 @@
 ﻿using CompanionFinder.Application.DTO;
 using CompanionFinder.Application.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using System.Diagnostics.Contracts;
 using System.Diagnostics.Tracing;
 
 namespace CompanionFinder.Infrastructure.Hubs
@@ -28,14 +29,17 @@ namespace CompanionFinder.Infrastructure.Hubs
             //if (opponent != null)
             //    await Clients.Client(opponent.ConnectionId).ServerMessage(new MessageDTO() { CreatedBy = "Server", Message = "Opponent connected", RoomId = connectionDTO.RoomId });
         }
-
         public async Task ClientMessage(MessageDTO message)
         {
             message.MessageId = Guid.NewGuid().ToString();
-            var user = _connections.Where(x => x.RoomId == message.RoomId);
-            var tmp = user.Select(x => x.ConnectionId).ToList().AsReadOnly();
-            await Clients.Clients(tmp).ServerMessage(message);
+            await Clients.Group(message.RoomId).ServerMessage(message);
+            //var user = _connections.Where(x => x.RoomId == message.RoomId);
+            //var tmp = user.Select(x => x.ConnectionId).ToList().AsReadOnly();
+            //await Clients.Clients(tmp).ServerMessage(message);
         }
-
+        public async Task ClientChangeWritingStatus(ChangeStatusDto dto)
+        {
+            await Clients.OthersInGroup(dto.RoomId).OpponentChangeWritingStatus(dto.WriteStatus);
+        }
     }
 }

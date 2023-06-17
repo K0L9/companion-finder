@@ -63,7 +63,6 @@ const HomePage: React.FC = () => {
     await http
       .get<Array<ConversationTheme>>("/api/theme/get-all")
       .then((result) => {
-        console.log(result.data);
         setThemes(result.data);
         setCurrentState(RoomSearchState.CONNECTED);
       })
@@ -112,8 +111,6 @@ const HomePage: React.FC = () => {
   };
 
   const joinRoom = async (roomId: string) => {
-    console.log("hubConnection: ", hubConnection);
-
     if (hubConnection) {
       await hubConnection.invoke("JoinRoom", {
         userId: userId,
@@ -128,7 +125,6 @@ const HomePage: React.FC = () => {
   };
 
   const foundedRoomHandler = async (roomId: any) => {
-    console.log("FOUNDED");
     setCurrentState(RoomSearchState.FOUNDED_ROOM);
     writeRoomId(roomId);
     setCurrentState(RoomSearchState.CONNECTING);
@@ -174,8 +170,6 @@ const HomePage: React.FC = () => {
   const onThemeChange = (event: any) => {
     setThemeId(event.target.value);
   };
-
-  console.log(currentFindState);
 
   return (
     <>

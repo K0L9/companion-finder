@@ -31,16 +31,20 @@ namespace CompanionFinder.WebUI.Controllers
         {
             try
             {
-                var result = await queueService.RequestHandleAsync(requestDTO);
-                if (result == null)
+                var requestInQueue = await queueService.FindSameArgumentsAsync(requestDTO);
+                if (requestInQueue == null)
+                {
+                    queueService.AddRequest(requestDTO);
                     return Ok();
+                }
 
                 string createdRoomId = await chatRoomService.CreateChatRoom(new AddRoomDTO() { ConversationThemeId = requestDTO.ThemeId });
-                await roomHub.Clients.Clients(result.ConnectionId, requestDTO.ConnectionId).FoundedRoom(createdRoomId);
+                await roomHub.Clients.Clients(requestInQueue.ConnectionId, requestDTO.ConnectionId).FoundedRoom(createdRoomId);
+                queueService.RemoveRequest(requestInQueue);
 
                 return CreatedAtAction(nameof(AddRequest), new { id = createdRoomId }, createdRoomId);
             }
-            catch
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -51,20 +55,13 @@ namespace CompanionFinder.WebUI.Controllers
         {
             try
             {
-                queueService.DeleteRequest(requestDTO);
+                queueService.RemoveRequest(requestDTO);
                 return Ok();
             }
             catch
             {
                 return BadRequest();
             }
-        }
-
-        [HttpGet("test")]
-        public async Task<IActionResult> Test()
-        {
-            await roomHub.Clients.All.FoundedRoom("1233");
-            return Ok();
         }
     }
 }

@@ -16,28 +16,28 @@ namespace CompanionFinder.Infrastructure.Services
             this.requestsQueue = requestsQueue;
         }
 
-        public async Task<FindRoomRequest> RequestHandleAsync(FindRoomRequest requestDTO)
-        {
-            var result = await FindSameArgumentsAsync(requestDTO);
+        //public async Task<FindRoomRequest> RequestHandleAsync(FindRoomRequest requestDTO)
+        //{
+        //    var result = await FindSameArgumentsAsync(requestDTO);
 
-            if (result == null)
-                AddRequest(requestDTO);
-            else
-                RemoveRequest(result);
+        //    if (result == null)
+        //        AddRequest(requestDTO);
+        //    else
+        //        RemoveRequest(result);
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        private void AddRequest(FindRoomRequest requestDTO)
+        public void AddRequest(FindRoomRequest requestDTO)
         {
             requestsQueue.Add(requestDTO);
         }
-        private void RemoveRequest(FindRoomRequest request)
+        public void RemoveRequest(FindRoomRequest request)
         {
             requestsQueue.Remove(request);
         }
 
-        private Task<FindRoomRequest?> FindSameArgumentsAsync(FindRoomRequest requestDTO)
+        public Task<FindRoomRequest?> FindSameArgumentsAsync(FindRoomRequest requestDTO)
         {
             return Task.Run(() =>
             {
@@ -46,11 +46,6 @@ namespace CompanionFinder.Infrastructure.Services
 
                 return result;
             });
-        }
-
-        public void DeleteRequest(FindRoomRequest requestDTO)
-        {
-            requestsQueue.Remove(requestDTO);
         }
     }
 }

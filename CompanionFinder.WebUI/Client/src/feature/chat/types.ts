@@ -11,3 +11,8 @@ export interface IMessage {
   messageId: string;
   createdAt: Date | null | undefined;
 }
+
+export interface Identificator {
+  connectionId: string;
+  roomId: string;
+}

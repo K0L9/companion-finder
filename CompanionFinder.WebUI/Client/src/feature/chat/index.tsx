@@ -3,11 +3,15 @@ import Input from "../../components/chat-input";
 import Message from "./message";
 import { HubConnection } from "@microsoft/signalr";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
-import { IMessage, MessageCreatorType } from "./types";
+import { IMessage, Identificator, MessageCreatorType } from "./types";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { CSSTransition } from "react-transition-group";
 
 const ChatPage = () => {
-  const { hubConnection, userId, roomId } = useTypedSelector((x) => x.room);
+  const { hubConnection, userId, roomId, connectionId } = useTypedSelector(
+    (x) => x.room
+  );
 
   const [messages, setMessages] = useState<Array<IMessage>>([
     {
@@ -34,6 +38,9 @@ const ChatPage = () => {
   ]);
   const navigator = useNavigate();
   const divRef = useRef<HTMLDivElement>(null);
+  const [opponentWriteStatus, setOpponentWriteStatus] =
+    useState<boolean>(false);
+  const refSpanStatus = useRef(null);
 
   useEffect(() => {
     if (!hubConnection) disconnect();
@@ -52,11 +59,15 @@ const ChatPage = () => {
       hubConnection.on("ServerMessage", (result: IMessage) => {
         addMessage(result);
       });
+      hubConnection.on("OpponentChangeWritingStatus", (result: boolean) => {
+        setOpponentWriteStatus(result);
+      });
     }
   };
   const removeHubConnectionHandlers = () => {
     if (hubConnection) {
       hubConnection.off("ServerMessage");
+      hubConnection.off("OpponentChangeWritingStatus");
     }
   };
 
@@ -83,6 +94,30 @@ const ChatPage = () => {
     console.log("disconnect");
     navigator("/");
   };
+  const startWriting = () => {
+    if (roomId) {
+      const data = {
+        roomId,
+        writeStatus: true,
+      };
+      hubConnection?.invoke("ClientChangeWritingStatus", data);
+    } else {
+      toast.error("You are disconnected");
+      disconnect();
+    }
+  };
+  const stopWriting = () => {
+    if (connectionId && roomId) {
+      const data = {
+        roomId,
+        writeStatus: false,
+      };
+      hubConnection?.invoke("ClientChangeWritingStatus", data);
+    } else {
+      toast.error("You are disconnected");
+      disconnect();
+    }
+  };
 
   return (
     <>
@@ -93,8 +128,23 @@ const ChatPage = () => {
           ))}
           <div ref={divRef} />
         </div>
+        <div className="opponent-write-block">
+          <CSSTransition
+            in={opponentWriteStatus}
+            timeout={200}
+            classNames="my-node"
+            unmountOnExit
+            nodeRef={refSpanStatus}
+          >
+            <span ref={refSpanStatus}>Opponent is writing...</span>
+          </CSSTransition>
+        </div>
         <div className="input-container">
-          <Input onSubmit={sendMessage} />
+          <Input
+            onSubmit={sendMessage}
+            onTypingStart={startWriting}
+            onTypingStop={stopWriting}
+          />
         </div>
       </div>
     </>

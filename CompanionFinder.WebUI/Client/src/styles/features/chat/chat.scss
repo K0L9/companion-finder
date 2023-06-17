@@ -19,7 +19,7 @@
         overflow-y: scroll;
         display: flex;
         flex-direction: column;
-        flex-basis: 91%;
+        flex-basis: 89%;
 
         &::-webkit-scrollbar {
             display: none;
@@ -73,5 +73,26 @@
     }
     .input-container {
         flex-basis: 9%;
+    }
+    .opponent-write-block{
+        flex-basis: 2%;
+        height: 20px;
+        color: gray;
+        padding-left: 15px;
+        margin-bottom: 5px;
+        .my-node-enter {
+            opacity: 0;
+          }
+          .my-node-enter-active {
+            opacity: 1;
+            transition: opacity 200ms;
+          }
+          .my-node-exit {
+            opacity: 1;
+          }
+          .my-node-exit-active {
+            opacity: 0;
+            transition: opacity 200ms;
+          }
     }
 }

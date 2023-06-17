@@ -21,8 +21,6 @@ const Message = ({ message }: MessageProps) => {
       return new Date(Date.parse(message?.createdAt?.toString()));
   };
 
-  console.log(getDate());
-
   return (
     <div className={`message-container ${getClassName()}`}>
       <div className="message">{message?.message}</div>
